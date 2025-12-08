@@ -1,8 +1,10 @@
+from functools import cache
+
 with open("input.txt", "r") as file:
     content = file.read()
 
 input_data: list[str] = list(filter(lambda el: len(el), content.split('\n')))
-
+display_grid = False
 
 def part1():
     lines = list(map(list, input_data))
@@ -24,34 +26,26 @@ def part1():
                     # right
                     if x < len(lines[y]) - 1 and lines[y + 1][x + 1] == ".":
                         lines[y + 1][x + 1] = "|"
-    for line in lines:
-        print("".join(line))
+    if display_grid:
+        for line in lines:
+            print("".join(line))
     print("Part 1:", total)
 
 
-compute_next_line_cache = dict()
-def compute_next_line(y: int, x: int):
-    if (x, y) in compute_next_line_cache:
-        return compute_next_line_cache[(x, y)]
-
+@cache
+def compute_from_position(y: int, x: int):
     if y == len(input_data) - 1:
-        compute_next_line_cache[(x, y)] = 1
         return 1
 
-    cell = input_data[y][x]
-    if cell == "^":
-        total = compute_next_line(y, x - 1) + compute_next_line(y, x + 1)
-        compute_next_line_cache[(x, y)] = total
-        return total
+    if input_data[y][x] == "^":
+        return compute_from_position(y, x + 1) + compute_from_position(y, x - 1)
     else:
-        total = compute_next_line(y + 1, x)
-        compute_next_line_cache[(x, y)] = total
-        return total
+        return compute_from_position(y + 1, x)
 
 
 def part2():
     start_position_x = input_data[0].index("S")
-    nb_paths = compute_next_line(0, start_position_x)
+    nb_paths = compute_from_position(0, start_position_x)
     print("Part 2:", nb_paths)
 
 
