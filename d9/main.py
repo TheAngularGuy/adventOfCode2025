@@ -35,7 +35,7 @@ def is_point_inside(x: int, y: int) -> bool:
         if y1 == y2 and y == y1 and min(x1, x2) <= x <= max(x1, x2):
             return True
 
-        # Ray casting alg
+        # Ray casting alg https://youtu.be/RSXM9bgqxJM?si=rngAl96VH6sGi7G9
         if ((y1 > y) != (y2 > y)) and (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1):
             inside = not inside
     return inside
