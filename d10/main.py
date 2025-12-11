@@ -1,4 +1,5 @@
 from itertools import combinations
+# from sympy import Symbol, nsolve
 
 with open("sample.txt", "r") as file:
     content = file.read()
@@ -53,11 +54,24 @@ def part1():
         presses = solve_line(lamps[i], buttons[i])
         if presses is not None:
             total += len(presses)
-    print("Part 2:", total)
+    print("Part 1:", total)
 
 
 def part2():
     # I'm still working on that equation :/
+    # b4 + b5 = 3
+    # b1 + b5 = 5
+    # b2 + b3 + b4 = 4
+    # b0 + b1 + b3 = 7
+    for joltage_list, btn_list in zip(joltages, buttons):
+        for i, joltage in enumerate(joltage_list):
+            sums = []
+            for j, button in enumerate(btn_list):
+                if button.count(str(i)):
+                    sums.append(f"b{j}")
+
+            print("equation:", "+".join(sums), "=", joltage)
+        print('--')
     print("Part 2:", 0)
 
 
