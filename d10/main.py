@@ -1,7 +1,7 @@
 from itertools import combinations
-# from sympy import Symbol, nsolve
+from z3 import *
 
-with open("sample.txt", "r") as file:
+with open("input.txt", "r") as file:
     content = file.read()
 
 input_data: list[str] = list(filter(lambda el: len(el), content.split('\n')))
@@ -54,25 +54,32 @@ def part1():
         presses = solve_line(lamps[i], buttons[i])
         if presses is not None:
             total += len(presses)
+
     print("Part 1:", total)
 
 
 def part2():
-    # I'm still working on that equation :/
-    # b4 + b5 = 3
-    # b1 + b5 = 5
-    # b2 + b3 + b4 = 4
-    # b0 + b1 + b3 = 7
+    total = 0
     for joltage_list, btn_list in zip(joltages, buttons):
+        optimizer = z3.Optimize()
+
+        var_names = [f"b{i}" for i in range(len(btn_list))]
+        symbols = z3.Ints(var_names)
+        for var in symbols:
+            optimizer.add(var >= 0)
+
         for i, joltage in enumerate(joltage_list):
-            sums = []
+            equation = 0
             for j, button in enumerate(btn_list):
                 if button.count(str(i)):
-                    sums.append(f"b{j}")
+                    equation = equation + symbols[j]
+            optimizer.add(equation == joltage)
 
-            print("equation:", "+".join(sums), "=", joltage)
-        print('--')
-    print("Part 2:", 0)
+        optimizer.minimize(sum(symbols))
+        optimizer.check()
+        total += optimizer.model().eval(sum(symbols)).as_long()
+
+    print("Part 2:", total)
 
 
 part1()
